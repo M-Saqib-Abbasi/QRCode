@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #input-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        #text-input {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 300px;
+            margin-right: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #qrcode {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+
+        #download-container {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .download-link {
+            text-decoration: none;
+            color: #fff;
+            padding: 10px 15px;
+            background-color: #28a745;
+            border-radius: 5px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .download-link:hover {
+            background-color: #218838;
+        }
+
+        .download-link img {
+            margin-right: 5px;
+            width: 16px;
+            height: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>QR Code Generator</h1>
+    <div id="input-container">
+        <input type="text" id="text-input" placeholder="Enter text to generate QR Code">
+        <button onclick="generateQRCode()">Generate QR Code</button>
+    </div>
+    <div id="qrcode"></div>
+    <div id="download-container">
+        <a id="download-png" class="download-link" style="display: none;" download="qrcode.png">
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/download.png" alt="Download PNG"> Download PNG
+        </a>
+        <a id="download-jpg" class="download-link" style="display: none;" download="qrcode.jpg">
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/download.png" alt="Download JPG"> Download JPG
+        </a>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        // document.addEventListener('keydown', function(event) {
+        //         if (event.key === 'F12' || 
+        //             (event.ctrlKey && event.shiftKey && event.key === 'I') || 
+        //             (event.ctrlKey && event.shiftKey && event.key === 'J') || 
+        //             (event.ctrlKey && event.key === 'U')) {
+        //             event.preventDefault();
+        //         }
+        //     });
+
+        document.addEventListener('keydown', function (e) {
+            // Prevent Ctrl+U
+            if (e.ctrlKey && e.key === 'u') {
+                e.preventDefault();
+            }
+
+            // Prevent F12
+            if (e.key === 'F12') {
+                e.preventDefault();
+            }
+
+            // Prevent Ctrl+Shift+I (Inspect)
+            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                e.preventDefault();
+            }
+
+            // Prevent Ctrl+Shift+J (Console)
+            if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+                e.preventDefault();
+            }
+
+            // Prevent Ctrl+Shift+C (Element Selector)
+            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                e.preventDefault();
+            }
+        });
+
+
+        document.onkeydown = function (e) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.ctrlKey && e.key === 'U')) {
+                return false;
+            }
+        };
+
+
+        function generateQRCode() {
+            const text = document.getElementById('text-input').value;
+            const qrcodeContainer = document.getElementById('qrcode');
+            qrcodeContainer.innerHTML = ""; // Clear previous QR Code
+            const qrcode = new QRCode(qrcodeContainer, {
+                text: text,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+            });
+
+            setTimeout(() => {
+                const qrCanvas = qrcodeContainer.querySelector('canvas');
+                const pngDataUrl = qrCanvas.toDataURL("image/png");
+                const jpgDataUrl = qrCanvas.toDataURL("image/jpeg");
+
+                document.getElementById('download-png').href = pngDataUrl;
+                document.getElementById('download-jpg').href = jpgDataUrl;
+
+                document.getElementById('download-png').style.display = "inline-flex";
+                document.getElementById('download-jpg').style.display = "inline-flex";
+            }, 500); // Timeout to ensure the QR code is rendered
+        }
+    </script>
+</body>
+
+</html>
